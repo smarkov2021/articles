@@ -7,6 +7,7 @@ import ru.job4j.articles.service.generator.RandomArticleGenerator;
 import ru.job4j.articles.store.ArticleStore;
 import ru.job4j.articles.store.WordStore;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -30,9 +31,9 @@ public class Application {
         var properties = new Properties();
         try (InputStream in = Application.class.getClassLoader().getResourceAsStream("application.properties")) {
             properties.load(in);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.error("Не удалось загрузить настройки. { }", e.getCause());
-            throw new IllegalStateException();
+            e.printStackTrace();
         }
         return properties;
     }

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.job4j.articles.model.Article;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -38,7 +39,7 @@ public class ArticleStore implements Store<Article>, AutoCloseable {
             );
         } catch (SQLException throwables) {
             LOGGER.error("Не удалось выполнить операцию: { }", throwables.getCause());
-            throw new IllegalStateException();
+            throwables.printStackTrace();
         }
     }
 
@@ -47,9 +48,9 @@ public class ArticleStore implements Store<Article>, AutoCloseable {
         try (var statement = connection.createStatement()) {
             var sql = Files.readString(Path.of("db/scripts", "articles.sql"));
             statement.execute(sql);
-        } catch (Exception e) {
+        } catch (IOException | SQLException e) {
             LOGGER.error("Не удалось выполнить операцию: { }", e.getCause());
-            throw new IllegalStateException();
+            e.printStackTrace();
         }
     }
 
@@ -64,9 +65,9 @@ public class ArticleStore implements Store<Article>, AutoCloseable {
             while (key.next()) {
                 model.setId(key.getInt(1));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             LOGGER.error("Не удалось выполнить операцию: { }", e.getCause());
-            throw new IllegalStateException();
+            e.printStackTrace();
         }
         return model;
     }
@@ -84,9 +85,9 @@ public class ArticleStore implements Store<Article>, AutoCloseable {
                         selection.getString("text")
                 ));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             LOGGER.error("Не удалось выполнить операцию: { }", e.getCause());
-            throw new IllegalStateException();
+            e.printStackTrace();
         }
         return articles;
     }
